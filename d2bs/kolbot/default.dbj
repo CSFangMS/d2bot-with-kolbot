@@ -92,11 +92,7 @@ function main() {
 		}
 
 		if (mode === 1638) { // getProfile
-			msg = JSON.parse(msg);
-
-			if (msg.Tag) {
-				GameAction.init(msg.Tag);
-			}
+			GameAction.init(JSON.parse(msg).Tag);
 		}
 	};
 

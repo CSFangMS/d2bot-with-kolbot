@@ -6,6 +6,12 @@
 
 function Mausoleum() {
 	Town.doChores();
+    
+    //BattleOrders.js
+    Pather.useWaypoint(35, true); // take Boer wp
+    Pather.moveTo(me.x + 5, me.y + 5);
+    delay(3000);
+    
 	Pather.useWaypoint(3);
 	Precast.doPrecast(true);
 

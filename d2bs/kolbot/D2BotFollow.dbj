@@ -29,7 +29,7 @@ var StarterConfig = {
 */
 
 var JoinSettings = {
-	"Leader": ["Leecher"]
+	"sorc": ["barb"]
 };
 
 // Advanced config - you don't have to edit this unless you need some of the features provided

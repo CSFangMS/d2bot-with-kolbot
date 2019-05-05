@@ -6,9 +6,15 @@
 
 function Pit() {
 	Town.doChores();
+    
+    //BattleOrders.js
+    Pather.useWaypoint(35, true); // take Boer wp
+    Pather.moveTo(me.x + 5, me.y + 5);
+    delay(3000);
+    
 	Pather.useWaypoint(6);
 	Precast.doPrecast(true);
-
+    
 	if (!Pather.moveToExit([7, 12], true)) {
 		throw new Error("Failed to move to Pit level 1");
 	}

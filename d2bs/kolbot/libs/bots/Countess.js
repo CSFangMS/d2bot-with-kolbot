@@ -8,6 +8,12 @@ function Countess() {
 	var i, poi;
 
 	Town.doChores();
+    
+    //BattleOrders.js
+    Pather.useWaypoint(35, true); // take Boer wp
+    Pather.moveTo(me.x + 5, me.y + 5);
+    delay(3000);
+    
 	Pather.useWaypoint(6);
 	Precast.doPrecast(true);
 
@@ -29,7 +35,7 @@ function Countess() {
 		Pather.moveTo(12548, 11083);
 		break;
 	}
-
+    
 	Attack.clear(20, 0, getLocaleString(2875)); // The Countess
 
 	if (Config.OpenChests) {

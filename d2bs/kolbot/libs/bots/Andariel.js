@@ -4,7 +4,7 @@
 *	@desc		kill Andariel
 */
 
-function Andariel () {
+function Andariel() {
 	this.killAndariel = function () {
 		var i,
 			target = getUnit(1, 156);
@@ -19,7 +19,7 @@ function Andariel () {
 		}
 
 		for (i = 0; i < 300; i += 1) {
-			ClassAttack.doAttack(target);
+			ClassAttack.doCast(target, Config.AttackSkill[1], Config.AttackSkill[2]);
 
 			if (target.dead) {
 				return true;
@@ -34,6 +34,13 @@ function Andariel () {
 	};
 
 	Town.doChores();
+    
+    //BattleOrders.js
+    Pather.useWaypoint(35, true); // take Boer wp
+    Pather.moveTo(me.x + 5, me.y + 5);
+    delay(3000);
+    
+    
 	Pather.useWaypoint(35);
 	Precast.doPrecast(true);
 

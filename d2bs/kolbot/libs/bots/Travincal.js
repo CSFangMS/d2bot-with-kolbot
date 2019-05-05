@@ -23,6 +23,12 @@ function Travincal() {
 	};
 
 	Town.doChores();
+    
+    //BattleOrders.js
+    Pather.useWaypoint(35, true); // take Boer wp
+    Pather.moveTo(me.x + 5, me.y + 5);
+    delay(3000);
+    
 	Pather.useWaypoint(83);
 	Precast.doPrecast(true);
 
@@ -58,7 +64,10 @@ function Travincal() {
 
 		// Stack Merc
 		if (me.classid === 4 && !me.getSkill(54, 1) && me.gametype === 1) {
-			Pather.moveToExit([100, 83], true);
+			// WAR - moveToExit needs to be fixed
+			Pather.moveToExit(100, true);
+			delay(me.ping*2 + 100);
+			Pather.moveToExit(83, true);
 		}
 
 		if (Config.MFLeader) {

@@ -1,100 +1,107 @@
 /**
-*	@filename	BattleOrders.js
-*	@author		kolton
-*	@desc		give or receive Battle Orders buff
+*   @filename   BattleOrders.js
+*   @author     nag0k
+*   @desc       give Battle Orders buff modded for hardcore, with barbarian waiting whole game on Catacombs 2 wp
+*               - the values in lines 14-16 are customizable.
+*               - in barbarian config file you should have Scripts.BattleOrders = true; and Config.QuitList = ["..."]; should be completed.
+*               - other chars should have in the running area scripts the lines to get the wp where Boer is:
+*                       Pather.useWaypoint(35, true); // take Boer wp
+*                       Pather.moveTo(me.x + 5, me.y + 5);
+*                       delay(3000);
 */
-
-function BattleOrders() {
-	this.giveBO = function (list) {
-		var i, unit,
-			failTimer = 60,
-			tick = getTickCount();
-
-		for (i = 0; i < list.length; i += 1) {
-			unit = getUnit(0, list[i]);
-
-			if (unit) {
-				while (!unit.getState(32) && copyUnit(unit).x) {
-					if (getTickCount() - tick >= failTimer * 1000) {
-						showConsole();
-						print("ÿc1BO timeout fail.");
-						quit();
-					}
-
-					Precast.doPrecast(true);
-					delay(1000);
-				}
-			}
-		}
-
-		return true;
-	};
-
-	Town.doChores();
-
-	try {
-		Pather.useWaypoint(35, true); // catacombs
-	} catch (wperror) {
-		showConsole();
-		print("ÿc1Failed to take waypoint.");
-		quit();
-	}
-
-	Pather.moveTo(me.x + 6, me.y + 6);
-
-	var i,
-		tick = getTickCount(),
-		failTimer = 60;
-
-MainLoop:
-	while (true) {
-		switch (Config.BattleOrders.Mode) {
-		case 0: // Give BO
-			for (i = 0; i < Config.BattleOrders.Getters.length; i += 1) {
-				while (!Misc.inMyParty(Config.BattleOrders.Getters[i]) || !getUnit(0, Config.BattleOrders.Getters[i])) {
-					if (getTickCount() - tick >= failTimer * 1000) {
-						showConsole();
-						print("ÿc1BO timeout fail.");
-						quit();
-					}
-
-					delay(500);
-				}
-			}
-
-			if (this.giveBO(Config.BattleOrders.Getters)) {
-				break MainLoop;
-			}
-
-			break;
-		case 1: // Get BO
-			if (me.getState(32)) {
-				delay(1000);
-
-				break MainLoop;
-			}
-
-			if (getTickCount() - tick >= failTimer * 1000) {
-				showConsole();
-				print("ÿc1BO timeout fail.");
-				quit();
-			}
-
-			break;
-		}
-
-		delay(500);
-	}
-
-	Pather.useWaypoint(1);
-
-	if (Config.BattleOrders.Mode === 0 && Config.BattleOrders.Wait) {
-		for (i = 0; i < Config.BattleOrders.Getters.length; i += 1) {
-			while (Misc.inMyParty(Config.BattleOrders.Getters[i])) {
-				delay(500);
-			}
-		}
-	}
-
-	return true;
+ 
+const BattleOrders = () => {
+    const BO_WP = 35; // area to buff - 35 is catacombs level 2
+    const TOWN_NEARBY_MONSTER = true; // go to town if monsters nearby
+    const TOWN_MANA = 20; // go refill mana if mana drops below this percent
+ 
+    const shouldHealMana = amount => me.mp < Math.floor(me.mpmax * amount / 100)
+ 
+    const healMana = () => {
+        Pather.useWaypoint(1);
+        Town.initNPC("Heal", "heal");
+        Pather.useWaypoint(BO_WP);
+    };
+ 
+    const shouldBuff = unit => (
+        Misc.inMyParty(unit) &&
+        getDistance(me, unit) < 10 &&
+        unit.name !== me.name &&
+        !unit.dead &&
+        !unit.inTown
+    )
+ 
+    const giveBuff = () => {
+        const unit = getUnit(0);
+ 
+        do {
+            if (shouldBuff(unit)) {
+                Precast.doPrecast(true);
+            }
+        } while(unit.getNext());
+    };
+ 
+    const monsterNear = () => {
+        const unit = getUnit(1);
+ 
+        if (unit) {
+            do {
+                if (Attack.checkMonster(unit) && getDistance(me, unit) < 20) {
+                    return true;
+                }
+            } while(unit.getNext());
+        }
+ 
+        return false;
+    };
+ 
+    if (!Config.QuitList) {
+        showConsole();
+        print('Set Config.QuitList in character settings');
+        print('If you don\'t I will idle indefinently');
+    }
+ 
+    if (me.playertype && Config.LifeChicken <= 0) {
+        showConsole();
+        print('ON HARDCORE');
+        print('YOU SHOULD SET CHICKEN LIFE');
+        print('MONSTERS CAN FIND THEIR WAY TO WPS..');
+    }
+ 
+    if (shouldHealMana(TOWN_MANA)) {
+        Town.initNPC("Heal", "heal");
+    }
+ 
+    Town.heal(); // incase our life is low as well
+ 
+    try {
+        Pather.useWaypoint(BO_WP);
+    } catch (e) {
+        showConsole();
+        print('Failed to move to BO WP');
+        print('Make sure I have ' + Pather.getAreaName(BO_WP) + ' waypoint');
+        delay(20000);
+ 
+        return true;
+    }
+ 
+    Pather.moveTo(me.x + 4, me.y + 4);
+ 
+    while (true) {
+        giveBuff();
+ 
+        if (TOWN_NEARBY_MONSTER && monsterNear()) {
+            if (!Pather.useWaypoint(1)) {
+                break;
+            }
+        }
+ 
+        if (shouldHealMana(TOWN_MANA)) {
+            healMana();
+        }
+ 
+        delay(25);
+    }
+ 
+    return true;
 }
