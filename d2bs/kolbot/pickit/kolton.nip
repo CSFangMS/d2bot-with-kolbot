@@ -630,7 +630,7 @@
 [name] == fullrejuvenationpotion
 
 //[name] == flawlessamethyst # # [maxquantity] == 3
-[name] == flawlesstopaz # # [maxquantity] == 3
+//[name] == flawlesstopaz # # [maxquantity] == 3
 //[name] == flawlessdiamond # # [maxquantity] == 3
 //[name] == flawlesssapphire # # [maxquantity] == 3
 //[name] == flawlessruby # # [maxquantity] == 3
@@ -661,9 +661,9 @@
 //[name] == korune # # [MaxQuantity] == 1     // 18
 //[name] == falrune # # [MaxQuantity] == 1    // 19
 //[name] == lemrune # # [MaxQuantity] == 1    // 20
-[name] == pulrune # # [MaxQuantity] == 1  //21
-[name] == umrune # # [MaxQuantity] == 1   //22
-[name] == malrune # # [MaxQuantity] == 1  //23
+//[name] == pulrune # # [MaxQuantity] == 1  //21
+//[name] == umrune # # [MaxQuantity] == 1   //22
+//[name] == malrune # # [MaxQuantity] == 1  //23
 
 [Name] >= IstRune && [Name] <= ZodRune
 
